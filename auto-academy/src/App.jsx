@@ -2,158 +2,171 @@ import { useMemo, useState } from "react";
 import "./App.css";
 
 const PACKAGES = [
-  {
-    id: "basic",
-    name: "Paquete Básico",
-    price: 10,
-    color: "#2563eb",
-    description: "Ideal para iniciar con contenido esencial.",
-    features: ["Hasta 5 cursos", "Guías introductorias", "Actualizaciones mensuales"],
-  },
-  {
-    id: "pro",
-    name: "Paquete Profesional",
-    price: 20,
-    color: "#7c3aed",
-    description: "Más contenido técnico para avanzar más rápido.",
-    features: ["Hasta 15 cursos", "Contenido premium", "Actualizaciones semanales"],
-  },
-  {
-    id: "complete",
-    name: "Paquete Completo",
-    price: 30,
-    color: "#f59e0b",
-    description: "Acceso total para dominar todos los módulos.",
-    features: ["Todos los cursos disponibles", "Material avanzado", "Actualizaciones frecuentes"],
-  },
+  { id: "basic", name: "Básico", price: 10, color: "#0b7a3b", perks: ["5 cursos", "Soporte email", "Acceso básico"] },
+  { id: "pro", name: "Profesional", price: 20, color: "#0f4c81", perks: ["15 cursos", "Soporte prioritario", "Nuevos contenidos"] },
+  { id: "complete", name: "Completo", price: 30, color: "#cf8a14", perks: ["Cursos ilimitados", "Soporte total", "Actualizaciones premium"] },
 ];
 
 const INITIAL_COURSES = [
-  { id: 1, title: "Diagnóstico Electrónico Automotriz", package: "pro", driveUrl: "https://drive.google.com/drive/folders/diagnostico-electronico" },
-  { id: 2, title: "Mecánica Básica de Vehículos", package: "basic", driveUrl: "https://drive.google.com/drive/folders/mecanica-basica" },
-  { id: 3, title: "Manual Completo - Honda Civic 2024", package: "complete", driveUrl: "https://drive.google.com/drive/folders/honda-civic-2024" },
+  { id: 1, title: "Inyección directa Jetronic", category: "Electrónica", package: "pro", driveUrl: "https://drive.google.com/drive/folders/jetronic" },
+  { id: 2, title: "Mecánica básica automotriz", category: "Mecánica", package: "basic", driveUrl: "https://drive.google.com/drive/folders/mecanica" },
+  { id: 3, title: "Sistemas ABS y control de frenado", category: "Frenos", package: "pro", driveUrl: "https://drive.google.com/drive/folders/abs" },
+  { id: 4, title: "Manual completo de diagnosis", category: "Diagnóstico", package: "complete", driveUrl: "https://drive.google.com/drive/folders/diagnosis" },
+  { id: 5, title: "Electricidad avanzada por marcas", category: "Electricidad", package: "complete", driveUrl: "https://drive.google.com/drive/folders/electricidad-avanzada" },
 ];
 
-function App() {
-  const [mode, setMode] = useState("public"); // public | user | admin
-  const [selectedPackage, setSelectedPackage] = useState(null);
-  const [purchasedPackage, setPurchasedPackage] = useState(null);
+export default function App() {
+  const [view, setView] = useState("home");
+  const [role, setRole] = useState("public");
   const [courses, setCourses] = useState(INITIAL_COURSES);
-  const [newTitle, setNewTitle] = useState("");
-  const [newPackage, setNewPackage] = useState("basic");
-  const [newUrl, setNewUrl] = useState("");
+  const [selectedPkg, setSelectedPkg] = useState(null);
+  const [activePkg, setActivePkg] = useState(null);
+  const [cart, setCart] = useState([]);
+  const [checkoutStep, setCheckoutStep] = useState(1);
+  const [auth, setAuth] = useState({ name: "", email: "", password: "" });
+  const [adminForm, setAdminForm] = useState({ title: "", category: "", package: "basic", driveUrl: "" });
 
-  const packageById = useMemo(
-    () => Object.fromEntries(PACKAGES.map((pkg) => [pkg.id, pkg])),
-    []
-  );
+  const packageById = useMemo(() => Object.fromEntries(PACKAGES.map((p) => [p.id, p])), []);
 
-  const canAccessCourse = (coursePkg) => {
-    if (!purchasedPackage) return false;
-    if (purchasedPackage === "complete") return true;
-    if (purchasedPackage === "pro") return coursePkg === "basic" || coursePkg === "pro";
-    return coursePkg === "basic";
+  const canOpenCourse = (pkgId) => {
+    if (role === "admin") return true;
+    if (!activePkg) return false;
+    if (activePkg === "complete") return true;
+    if (activePkg === "pro") return pkgId === "basic" || pkgId === "pro";
+    return pkgId === "basic";
   };
 
-  const handlePurchase = () => {
-    if (!selectedPackage) return;
-    setPurchasedPackage(selectedPackage);
-    alert(`Compra simulada completada: ${packageById[selectedPackage].name}`);
+  const buyPackage = () => {
+    if (!selectedPkg) return;
+    setActivePkg(selectedPkg);
+    if (!cart.some((item) => item.type === "package")) {
+      setCart((prev) => [...prev, { id: selectedPkg, type: "package", label: packageById[selectedPkg].name, price: packageById[selectedPkg].price }]);
+    }
+    setView("checkout");
   };
 
   const addCourse = (e) => {
     e.preventDefault();
-    if (!newTitle.trim() || !newUrl.trim()) return;
-    setCourses((prev) => [
-      ...prev,
-      { id: Date.now(), title: newTitle.trim(), package: newPackage, driveUrl: newUrl.trim() },
-    ]);
-    setNewTitle("");
-    setNewUrl("");
+    if (!adminForm.title || !adminForm.category || !adminForm.driveUrl) return;
+    setCourses((prev) => [...prev, { id: Date.now(), ...adminForm }]);
+    setAdminForm({ title: "", category: "", package: "basic", driveUrl: "" });
   };
 
   return (
-    <div className="landing">
-      <header className="hero">
-        <p className="tag">AutoAcademy · Catálogo</p>
-        <h1>Vista pública + acceso admin y compra de paquetes</h1>
-        <p>
-          Modo público: solo visualización. Modo usuario: puede seleccionar y comprar paquete.
-          Modo admin: gestiona cursos.
-        </p>
-
-        <div className="mode-switch">
-          <button onClick={() => setMode("public")} className={mode === "public" ? "active" : ""}>Visitante</button>
-          <button onClick={() => setMode("user")} className={mode === "user" ? "active" : ""}>Usuario</button>
-          <button onClick={() => setMode("admin")} className={mode === "admin" ? "active" : ""}>Administrador</button>
+    <div className="site">
+      <header>
+        <div className="topbar">
+          <div>📞 800.426.6867</div><div>Contáctanos</div><div>Ventas</div><div>Apoyo</div>
+        </div>
+        <div className="mainnav">
+          <div className="logo">AUTO<span>MOTOR</span></div>
+          <nav>
+            <button onClick={() => setView("home")}>Inicio</button>
+            <button onClick={() => setView("catalog")}>Cursos</button>
+            <button onClick={() => setView("packages")}>Paquetes</button>
+            <button onClick={() => setView("checkout")}>Mi compra ({cart.length})</button>
+          </nav>
+          <div className="role-switch">
+            <button onClick={() => setRole("public")} className={role === "public" ? "active" : ""}>Visitante</button>
+            <button onClick={() => setRole("user")} className={role === "user" ? "active" : ""}>Usuario</button>
+            <button onClick={() => setRole("admin")} className={role === "admin" ? "active" : ""}>Admin</button>
+          </div>
         </div>
       </header>
 
-      <section className="packages">
-        {PACKAGES.map((pkg) => (
-          <article key={pkg.id} className="card" style={{ borderTopColor: pkg.color }}>
-            <h2>{pkg.name}</h2>
-            <p className="price">USD ${pkg.price}</p>
-            <p>{pkg.description}</p>
-            <ul>{pkg.features.map((feature) => <li key={feature}>{feature}</li>)}</ul>
-            {mode === "user" ? (
-              <button onClick={() => setSelectedPackage(pkg.id)} className="action-btn">
-                Seleccionar paquete
-              </button>
-            ) : (
-              <span className="badge" style={{ background: pkg.color }}>Solo información</span>
-            )}
-          </article>
-        ))}
-      </section>
-
-      {mode === "user" && (
-        <section className="catalog">
-          <h3>Compra de paquete</h3>
-          <p>Paquete seleccionado: {selectedPackage ? packageById[selectedPackage].name : "Ninguno"}</p>
-          <button className="action-btn" disabled={!selectedPackage} onClick={handlePurchase}>
-            Comprar (simulación)
-          </button>
-          <p className="muted">Activo: {purchasedPackage ? packageById[purchasedPackage].name : "Sin paquete"}</p>
+      {view === "home" && (
+        <section className="hero">
+          <div>
+            <p className="eyebrow">MECÁNICA AUTOMOTRIZ · FORMACIÓN PROFESIONAL</p>
+            <h1>Manuales y cursos automotrices con diseño profesional</h1>
+            <p>Los visitantes pueden visualizar todo el catálogo, pero los enlaces Drive solo se habilitan al registrarse y comprar un paquete.</p>
+            <div className="actions">
+              <button onClick={() => setView("packages")}>Comprar ahora</button>
+              <button className="ghost" onClick={() => setView("catalog")}>Ver catálogo</button>
+            </div>
+          </div>
+          <div className="hero-card">
+            <h3>Acceso rápido</h3>
+            <p>Paquete activo: <b>{activePkg ? packageById[activePkg].name : "Ninguno"}</b></p>
+            <p>Rol actual: <b>{role === "public" ? "Visitante" : role === "user" ? "Usuario" : "Administrador"}</b></p>
+          </div>
         </section>
       )}
 
-      {mode === "admin" && (
-        <section className="catalog">
-          <h3>Panel administrador - Gestionar cursos</h3>
-          <form className="admin-form" onSubmit={addCourse}>
-            <input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Título del curso" />
-            <select value={newPackage} onChange={(e) => setNewPackage(e.target.value)}>
-              {PACKAGES.map((pkg) => <option key={pkg.id} value={pkg.id}>{pkg.name}</option>)}
-            </select>
-            <input value={newUrl} onChange={(e) => setNewUrl(e.target.value)} placeholder="URL de Drive" />
-            <button className="action-btn" type="submit">Agregar curso</button>
+      {view === "packages" && (
+        <section className="panel">
+          <h2>Selecciona uno de los 3 paquetes</h2>
+          <div className="grid3">
+            {PACKAGES.map((pkg) => (
+              <article key={pkg.id} className="pkg" style={{ borderTopColor: pkg.color }}>
+                <h3>{pkg.name}</h3><p className="price">USD ${pkg.price}</p>
+                <ul>{pkg.perks.map((p) => <li key={p}>{p}</li>)}</ul>
+                {role === "user" ? (
+                  <button onClick={() => setSelectedPkg(pkg.id)} className={selectedPkg === pkg.id ? "selected" : ""}>Elegir</button>
+                ) : <small>Regístrate como usuario para comprar.</small>}
+              </article>
+            ))}
+          </div>
+          {role === "user" && <button className="buy" onClick={buyPackage} disabled={!selectedPkg}>Continuar compra</button>}
+        </section>
+      )}
+
+      {view === "catalog" && (
+        <section className="panel">
+          <h2>Catálogo de cursos</h2>
+          <div className="courseGrid">
+            {courses.map((course) => (
+              <article key={course.id} className="courseCard">
+                <h4>{course.title}</h4>
+                <p>{course.category} · Incluido en: {packageById[course.package]?.name}</p>
+                {canOpenCourse(course.package) ? (
+                  <a href={course.driveUrl} target="_blank" rel="noreferrer">Abrir Drive</a>
+                ) : (
+                  <button disabled>🔒 Bloqueado hasta compra</button>
+                )}
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {view === "checkout" && (
+        <section className="panel checkout">
+          <h2>Checkout</h2>
+          <div className="steps">
+            {[1,2,3].map((s) => <button key={s} className={checkoutStep === s ? "active" : ""} onClick={() => setCheckoutStep(s)}>Paso {s}</button>)}
+          </div>
+          {checkoutStep === 1 && (
+            <div className="formBox">
+              <h3>Identificación</h3>
+              <input placeholder="Nombre" value={auth.name} onChange={(e)=>setAuth({...auth, name:e.target.value})}/>
+              <input placeholder="Email" value={auth.email} onChange={(e)=>setAuth({...auth, email:e.target.value})}/>
+              <input placeholder="Contraseña" type="password" value={auth.password} onChange={(e)=>setAuth({...auth, password:e.target.value})}/>
+            </div>
+          )}
+          {checkoutStep === 2 && <div className="formBox"><h3>Datos de envío</h3><input placeholder="Dirección"/><input placeholder="Ciudad"/><input placeholder="Código postal"/></div>}
+          {checkoutStep === 3 && <div className="formBox"><h3>Confirmación</h3><p>Total: USD ${cart.reduce((a,b)=>a+b.price,0)}</p><button onClick={()=>alert("Compra completada (demo)")}>Finalizar</button></div>}
+        </section>
+      )}
+
+      {role === "admin" && (
+        <section className="panel">
+          <h2>Panel administrador · Gestionar cursos</h2>
+          <form className="admin" onSubmit={addCourse}>
+            <input placeholder="Título" value={adminForm.title} onChange={(e)=>setAdminForm({...adminForm,title:e.target.value})}/>
+            <input placeholder="Categoría" value={adminForm.category} onChange={(e)=>setAdminForm({...adminForm,category:e.target.value})}/>
+            <select value={adminForm.package} onChange={(e)=>setAdminForm({...adminForm,package:e.target.value})}>{PACKAGES.map((p)=><option value={p.id} key={p.id}>{p.name}</option>)}</select>
+            <input placeholder="URL Drive" value={adminForm.driveUrl} onChange={(e)=>setAdminForm({...adminForm,driveUrl:e.target.value})}/>
+            <button type="submit">Agregar curso</button>
           </form>
         </section>
       )}
 
-      <section className="catalog">
-        <h3>Cursos disponibles</h3>
-        <p>Visitante: bloqueado. Usuario con paquete: acceso según nivel. Admin: visualización completa.</p>
-        <div className="course-grid">
-          {courses.map((course) => {
-            const allowed = mode === "admin" || (mode === "user" && canAccessCourse(course.package));
-            return (
-              <article key={course.id} className="course-item">
-                <div>
-                  <strong>{course.title}</strong>
-                  <small>Incluido en: {packageById[course.package]?.name}</small>
-                </div>
-                {allowed ? (
-                  <a href={course.driveUrl} target="_blank" rel="noreferrer" className="action-btn">Abrir Drive</a>
-                ) : (
-                  <button type="button" disabled>🔒 Acceso bloqueado</button>
-                )}
-              </article>
-            );
-          })}
-        </div>
-      </section>
+      <footer className="footer">
+        <div><h4>Contacto</h4><p>655478302 · 915548195</p><p>libromotor@infonogocio.com</p></div>
+        <div><h4>Páginas legales</h4><p>Aviso legal · Condiciones · Cookies</p></div>
+        <div><h4>Atención al cliente</h4><p>Quiénes somos · Pedidos especiales</p></div>
+      </footer>
     </div>
   );
 }
