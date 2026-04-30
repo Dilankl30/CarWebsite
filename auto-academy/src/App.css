@@ -1,0 +1,105 @@
+.landing {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+  color: #0f172a;
+}
+
+.hero {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: #fff;
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.tag {
+  color: #93c5fd;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.hero h1 {
+  font-size: clamp(1.6rem, 3.4vw, 2.5rem);
+  margin-bottom: 0.75rem;
+}
+
+.hero p {
+  opacity: 0.95;
+  line-height: 1.5;
+}
+
+.packages {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.8rem;
+}
+
+.card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1rem;
+  border-top: 5px solid;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+.price {
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin: 0.35rem 0;
+}
+
+.card ul {
+  padding-left: 1.2rem;
+  margin: 0.8rem 0 1rem;
+  line-height: 1.5;
+}
+
+.badge {
+  display: inline-block;
+  color: #fff;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.catalog {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.2rem;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+.course-grid {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.course-item {
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  padding: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.course-item small {
+  display: block;
+  margin-top: 0.25rem;
+  color: #475569;
+}
+
+.course-item button {
+  border: none;
+  background: #e2e8f0;
+  color: #334155;
+  border-radius: 8px;
+  padding: 0.45rem 0.65rem;
+  font-weight: 600;
+  cursor: not-allowed;
+}
