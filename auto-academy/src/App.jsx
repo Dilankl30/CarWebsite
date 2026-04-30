@@ -2,25 +2,10 @@ import { useMemo, useState } from "react";
 import "./App.css";
 
 const PACKAGES = [
-  { id: "basic", name: "Básico", price: 10 },
-  { id: "pro", name: "Profesional", price: 20 },
-  { id: "complete", name: "Completo", price: 30 },
+  { id: "basic", name: "Básico", price: 10, sales: 52, description: "Ideal para iniciar en diagnóstico automotriz.", includes: ["5 cursos esenciales", "Guías PDF base", "1 clase en vivo/mes"] },
+  { id: "pro", name: "Profesional", price: 20, sales: 78, description: "Profundiza en electrónica y reparación avanzada.", includes: ["15 cursos", "Casos reales de taller", "Soporte prioritario"] },
+  { id: "complete", name: "Completo", price: 30, sales: 35, description: "Ruta total para dominar el área automotriz.", includes: ["Todo el catálogo", "Nuevos lanzamientos", "Mentoría mensual"] },
 ];
-
-const COURSE = {
-  title: "Motores Eléctricos - Diagnóstico y Reparación",
-  subtitle: "Seleccionar, operar y analizar motores eléctricos con enfoque automotriz.",
-  rating: 4.8,
-  students: 1287,
-  updated: "04/2026",
-  language: "Español",
-  learn: [
-    "Principio de funcionamiento del motor eléctrico",
-    "Partes y pruebas clave con multímetro y osciloscopio",
-    "Diagnóstico de fallas frecuentes en talleres",
-    "Conexiones, par-velocidad y deslizamiento",
-  ],
-};
 
 const CURRICULUM = [
   { id: 1, title: "Bienvenida", lessons: 1, min: 1, preview: true },
@@ -48,11 +33,9 @@ export default function App() {
   const [expanded, setExpanded] = useState([1]);
 
   const packageById = useMemo(() => Object.fromEntries(PACKAGES.map((p) => [p.id, p])), []);
+  const featured = useMemo(() => [...PACKAGES].sort((a,b)=>b.sales-a.sales).slice(0,2), []);
 
-  const toggleSection = (id) => {
-    setExpanded((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-  };
-
+  const toggleSection = (id) => setExpanded((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   const filteredCatalog = CATALOG.filter((c) => c.title.toLowerCase().includes(query.toLowerCase()));
 
   const canOpenCourse = (pkg) => {
@@ -63,17 +46,6 @@ export default function App() {
     return pkg === "basic";
   };
 
-  const submitAuth = (e) => {
-    e.preventDefault();
-    setRole("user");
-    setAuthOpen(false);
-  };
-
-  const handleBuy = () => {
-    setActivePkg(selectedPkg);
-    setView("catalog");
-  };
-
   return (
     <div className="appShell">
       <div className="promo">¡Queda 1 día! Añade habilidades por solo 9,99 US$ hasta el 1 de mayo.</div>
@@ -81,57 +53,61 @@ export default function App() {
         <div className="brand" onClick={() => setView("home")}>AutoAcademy</div>
         <button onClick={() => setView("home")}>Inicio</button>
         <button onClick={() => setView("catalog")}>Explorar</button>
-        <button onClick={() => setView("course")}>Curso Automotriz</button>
         <button onClick={() => setView("resources")}>Recursos</button>
-        <div className="searchBox">
-          <input placeholder="Buscar cursos" value={query} onChange={(e) => setQuery(e.target.value)} />
-        </div>
+        <div className="searchBox"><input placeholder="Buscar cursos" value={query} onChange={(e) => setQuery(e.target.value)} /></div>
         <button className="outline" onClick={() => { setAuthMode("login"); setAuthOpen(true); }}>Iniciar sesión</button>
         <button className="fill" onClick={() => { setAuthMode("register"); setAuthOpen(true); }}>Regístrate</button>
       </header>
 
       {view === "home" && (
-        <section className="hero">
-          <div>
-            <p className="crumb">Negocios &gt; Industria &gt; Ingeniería eléctrica</p>
-            <h1>{COURSE.title}</h1>
-            <p>{COURSE.subtitle}</p>
-            <p className="meta">⭐ {COURSE.rating} · {COURSE.students} estudiantes · Actualizado {COURSE.updated} · {COURSE.language}</p>
-            <div className="ctaRow">
-              <button className="fill" onClick={() => setView("packages")}>Ver paquetes</button>
-              <button className="outline" onClick={() => setView("course")}>Ver índice del curso</button>
-            </div>
-          </div>
-          <aside className="priceCard">
-            <h3>Acceso por suscripción</h3>
-            <p className="big">Desde 10,00 US$ / mes</p>
-            <p>Paquete activo: <b>{activePkg ? packageById[activePkg].name : "Ninguno"}</b></p>
-            <button className="fill" onClick={() => setView("packages")}>Comprar ahora</button>
-          </aside>
-        </section>
-      )}
-
-      {view === "course" && (
-        <section className="section">
-          <h2>Contenido del curso</h2>
-          <p>{CURRICULUM.length} secciones · {CURRICULUM.reduce((a, s) => a + s.lessons, 0)} clases · {CURRICULUM.reduce((a, s) => a + s.min, 0)} min total</p>
-          <div className="accordion">
-            {CURRICULUM.map((s) => (
-              <div key={s.id} className="accItem">
-                <button className="accHeader" onClick={() => toggleSection(s.id)}>
-                  <span>{s.title}</span>
-                  <span>{s.lessons} clases · {s.min} min</span>
-                </button>
-                {expanded.includes(s.id) && (
-                  <div className="accBody">
-                    <div>Lección principal</div>
-                    <div>{s.preview ? <a href="#">Vista previa</a> : "Incluida con compra"}</div>
-                  </div>
-                )}
+        <>
+          <section className="hero">
+            <div>
+              <p className="crumb">Negocios &gt; Industria &gt; Ingeniería eléctrica</p>
+              <h1>Motores Eléctricos - Diagnóstico y Reparación</h1>
+              <p>Seleccionar, operar y analizar motores eléctricos con enfoque automotriz.</p>
+              <p className="meta">⭐ 4.8 · 1287 estudiantes · Actualizado 04/2026 · Español</p>
+              <div className="ctaRow">
+                <button className="fill" onClick={() => setView("packages")}>Ver paquetes</button>
+                <button className="outline" onClick={() => setView("catalog")}>Ver catálogo</button>
               </div>
-            ))}
-          </div>
-        </section>
+            </div>
+            <aside className="priceCard">
+              <h3>Acceso por suscripción</h3>
+              <p className="big">Desde 10,00 US$ / mes</p>
+              <p>Paquete activo: <b>{activePkg ? packageById[activePkg].name : "Ninguno"}</b></p>
+              <button className="fill" onClick={() => setView("packages")}>Comprar ahora</button>
+            </aside>
+          </section>
+
+          <section className="section">
+            <h2>Paquetes más comprados</h2>
+            <div className="packages">
+              {featured.map((p) => (
+                <article key={p.id} className="pkg featured">
+                  <small className="tag">Top ventas · {p.sales} compras</small>
+                  <h3>{p.name}</h3>
+                  <p>{p.description}</p>
+                  <p className="big">US$ {p.price}</p>
+                  <ul>{p.includes.map((i) => <li key={i}>{i}</li>)}</ul>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="section">
+            <h2>Índice del curso (visible en Inicio)</h2>
+            <p>{CURRICULUM.length} secciones · {CURRICULUM.reduce((a, s) => a + s.lessons, 0)} clases · {CURRICULUM.reduce((a, s) => a + s.min, 0)} min total</p>
+            <div className="accordion">
+              {CURRICULUM.map((s) => (
+                <div key={s.id} className="accItem">
+                  <button className="accHeader" onClick={() => toggleSection(s.id)}><span>{s.title}</span><span>{s.lessons} clases · {s.min} min</span></button>
+                  {expanded.includes(s.id) && <div className="accBody"><div>Lección principal</div><div>{s.preview ? <a href="#">Vista previa</a> : "Incluida con compra"}</div></div>}
+                </div>
+              ))}
+            </div>
+          </section>
+        </>
       )}
 
       {view === "packages" && (
@@ -140,51 +116,20 @@ export default function App() {
           <div className="packages">
             {PACKAGES.map((p) => (
               <article key={p.id} className={`pkg ${selectedPkg === p.id ? "selected" : ""}`}>
-                <h3>{p.name}</h3>
-                <p className="big">US$ {p.price}</p>
+                <h3>{p.name}</h3><p>{p.description}</p><p className="big">US$ {p.price}</p>
+                <ul>{p.includes.map((i) => <li key={i}>{i}</li>)}</ul>
                 <button onClick={() => setSelectedPkg(p.id)} className="outline">Seleccionar</button>
               </article>
             ))}
           </div>
-          <button className="fill" onClick={handleBuy}>Confirmar compra (demo)</button>
+          <button className="fill" onClick={() => { setActivePkg(selectedPkg); setView("catalog"); }}>Confirmar compra (demo)</button>
         </section>
       )}
 
-      {view === "catalog" && (
-        <section className="section">
-          <h2>Catálogo de cursos</h2>
-          <div className="catalogGrid">
-            {filteredCatalog.map((c) => (
-              <article key={c.id} className="courseCard">
-                <h3>{c.title}</h3>
-                <p>{c.category} · Paquete {packageById[c.package].name}</p>
-                {canOpenCourse(c.package) ? <a href={c.driveUrl} target="_blank" rel="noreferrer">Abrir contenido</a> : <button disabled>🔒 Compra para acceder</button>}
-              </article>
-            ))}
-          </div>
-        </section>
-      )}
+      {view === "catalog" && <section className="section"><h2>Catálogo de cursos</h2><div className="catalogGrid">{filteredCatalog.map((c)=><article key={c.id} className="courseCard"><h3>{c.title}</h3><p>{c.category} · Paquete {packageById[c.package].name}</p>{canOpenCourse(c.package)?<a href={c.driveUrl} target="_blank" rel="noreferrer">Abrir contenido</a>:<button disabled>🔒 Compra para acceder</button>}</article>)}</div></section>}
+      {view === "resources" && <section className="section"><h2>Recursos</h2><p>Zona de recursos y novedades.</p></section>}
 
-      {view === "resources" && (
-        <section className="section">
-          <h2>Recursos</h2>
-          <p>Zona de recursos, noticias y eventos próximos. Aquí luego cargamos contenido real.</p>
-        </section>
-      )}
-
-      {authOpen && (
-        <div className="modalBack" onClick={() => setAuthOpen(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h3>{authMode === "login" ? "Iniciar sesión" : "Crear cuenta"}</h3>
-            <form onSubmit={submitAuth} className="authForm">
-              {authMode === "register" && <input placeholder="Nombre" value={authForm.name} onChange={(e) => setAuthForm({ ...authForm, name: e.target.value })} />}
-              <input placeholder="Correo" value={authForm.email} onChange={(e) => setAuthForm({ ...authForm, email: e.target.value })} />
-              <input placeholder="Contraseña" type="password" value={authForm.password} onChange={(e) => setAuthForm({ ...authForm, password: e.target.value })} />
-              <button className="fill" type="submit">{authMode === "login" ? "Entrar" : "Registrarme"}</button>
-            </form>
-          </div>
-        </div>
-      )}
+      {authOpen && <div className="modalBack" onClick={() => setAuthOpen(false)}><div className="modal" onClick={(e)=>e.stopPropagation()}><h3>{authMode === "login" ? "Iniciar sesión" : "Crear cuenta"}</h3><form onSubmit={(e)=>{e.preventDefault();setRole("user");setAuthOpen(false);}} className="authForm">{authMode === "register" && <input placeholder="Nombre" value={authForm.name} onChange={(e)=>setAuthForm({...authForm,name:e.target.value})}/>}<input placeholder="Correo" value={authForm.email} onChange={(e)=>setAuthForm({...authForm,email:e.target.value})}/><input placeholder="Contraseña" type="password" value={authForm.password} onChange={(e)=>setAuthForm({...authForm,password:e.target.value})}/><button className="fill" type="submit">{authMode === "login" ? "Entrar" : "Registrarme"}</button></form></div></div>}
     </div>
   );
 }
