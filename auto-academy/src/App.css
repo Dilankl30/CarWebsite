@@ -1,105 +1,17 @@
-.landing {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 2rem 1rem 3rem;
-  color: #0f172a;
-}
-
-.hero {
-  background: linear-gradient(135deg, #0f172a, #1e293b);
-  color: #fff;
-  border-radius: 20px;
-  padding: 2rem;
-  margin-bottom: 1.5rem;
-}
-
-.tag {
-  color: #93c5fd;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-
-.hero h1 {
-  font-size: clamp(1.6rem, 3.4vw, 2.5rem);
-  margin-bottom: 0.75rem;
-}
-
-.hero p {
-  opacity: 0.95;
-  line-height: 1.5;
-}
-
-.packages {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.8rem;
-}
-
-.card {
-  background: #fff;
-  border-radius: 14px;
-  padding: 1rem;
-  border-top: 5px solid;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-}
-
-.price {
-  font-weight: 700;
-  font-size: 1.25rem;
-  margin: 0.35rem 0;
-}
-
-.card ul {
-  padding-left: 1.2rem;
-  margin: 0.8rem 0 1rem;
-  line-height: 1.5;
-}
-
-.badge {
-  display: inline-block;
-  color: #fff;
-  padding: 0.3rem 0.65rem;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-.catalog {
-  background: #fff;
-  border-radius: 14px;
-  padding: 1.2rem;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-}
-
-.course-grid {
-  margin-top: 1rem;
-  display: grid;
-  gap: 0.7rem;
-}
-
-.course-item {
-  border: 1px solid #dbeafe;
-  border-radius: 10px;
-  padding: 0.8rem;
-  display: flex;
-  justify-content: space-between;
-  gap: 0.8rem;
-  align-items: center;
-}
-
-.course-item small {
-  display: block;
-  margin-top: 0.25rem;
-  color: #475569;
-}
-
-.course-item button {
-  border: none;
-  background: #e2e8f0;
-  color: #334155;
-  border-radius: 8px;
-  padding: 0.45rem 0.65rem;
-  font-weight: 600;
-  cursor: not-allowed;
-}
+:root{--green:#0a7a33;--dark:#08233e;--light:#eaf5fc}
+*{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,sans-serif;background:#f1f3f4;color:#13243a}
+.topbar{background:#0c4777;color:#fff;display:flex;gap:28px;justify-content:flex-end;padding:12px 24px;font-weight:600}
+.mainnav{background:#fff;display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid #d8dee4}
+.logo{font-size:42px;font-weight:900;color:#0f96d3}.logo span{color:#0a1f35}
+.mainnav nav{display:flex;gap:10px}.mainnav nav button,.role-switch button{border:none;background:transparent;padding:10px 12px;font-weight:700;cursor:pointer}
+.role-switch{display:flex;background:#f3f6f8;border-radius:999px;padding:4px}.role-switch .active{background:var(--green);color:#fff;border-radius:999px}
+.site{max-width:1400px;margin:0 auto;background:#fff;min-height:100vh}
+.hero{display:grid;grid-template-columns:1.4fr 1fr;gap:20px;padding:48px;background:var(--light)} .eyebrow{color:#0c4777;font-weight:700}
+.hero h1{font-size:58px;line-height:1.05;margin:10px 0 14px}.actions{display:flex;gap:10px}.actions button,.buy,.pkg button,.admin button,.formBox button{border:none;border-radius:8px;padding:12px 16px;font-weight:700;background:var(--green);color:#fff;cursor:pointer}
+.actions .ghost{background:#fff;color:#0f4c81;border:1px solid #0f4c81}.hero-card{background:#fff;border-radius:14px;padding:20px;box-shadow:0 8px 20px rgba(0,0,0,.12)}
+.panel{padding:32px 48px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.pkg{border-top:6px solid #ccc;background:#fff;padding:16px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,.08)}.price{font-size:28px;font-weight:900}.pkg button.selected{background:#cf8a14}
+.courseGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.courseCard{border:1px solid #d3dde8;padding:14px;border-radius:10px}.courseCard a,.courseCard button{margin-top:10px;display:inline-block;padding:8px 10px;border:none;border-radius:8px;background:#0f4c81;color:#fff;text-decoration:none}.courseCard button[disabled]{background:#b7c2cf;cursor:not-allowed}
+.checkout .steps{display:flex;gap:10px;margin-bottom:14px}.steps button{border:2px solid #d2d8de;background:#fff;padding:8px 14px;border-radius:999px}.steps .active{border-color:var(--green);color:var(--green);font-weight:800}
+.formBox{display:grid;gap:10px;max-width:560px}.formBox input,.admin input,.admin select{padding:12px;border:1px solid #c4ced8;border-radius:8px}.admin{display:grid;gap:10px;max-width:720px}
+.footer{margin-top:24px;background:var(--green);color:#fff;display:grid;grid-template-columns:repeat(3,1fr);padding:28px 44px}
+@media (max-width:1000px){.hero{grid-template-columns:1fr}.grid3,.courseGrid,.footer{grid-template-columns:1fr}.mainnav{flex-direction:column;gap:8px}.hero h1{font-size:36px}}
